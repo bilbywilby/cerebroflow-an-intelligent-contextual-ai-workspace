@@ -79,7 +79,8 @@ function updateWranglerJsonc() {
 function runSetupCommands() {
     const commands = [
     "bun add react-parallax@^3.2.0",
-    "bun add react-intersection-observer@^9.0.0"
+    "bun add react-intersection-observer@^9.0.0",
+    "bun add recharts"
 ];
     
     if (commands.length === 0) {
