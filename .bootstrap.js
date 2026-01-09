@@ -81,7 +81,8 @@ function runSetupCommands() {
     "bun add react-parallax@^3.2.0",
     "bun add react-intersection-observer@^9.0.0",
     "bun add recharts",
-    "bun add react-intersection-observer react-parallax recharts"
+    "bun add react-intersection-observer react-parallax recharts",
+    "bun add lucide-react framer-motion recharts react-intersection-observer react-parallax"
 ];
     
     if (commands.length === 0) {
