@@ -1,26 +1,58 @@
 import { IndexedEntity } from "./core-utils";
-import type { Session, ContextInteraction, User, Chat, ChatMessage } from "@shared/types";
+import type { Session, ContextInteraction, Checkpoint, User, Chat, ChatMessage } from "@shared/types";
 import { MOCK_SESSIONS, MOCK_INTERACTIONS, MOCK_CHAT_MESSAGES, MOCK_CHATS, MOCK_USERS } from "@shared/mock-data";
 export class SessionEntity extends IndexedEntity<Session> {
   static readonly entityName = "session";
   static readonly indexName = "sessions";
-  static readonly initialState: Session = { 
-    id: "", 
-    title: "Untitled Workspace", 
-    createdAt: 0, 
-    lastAccessed: 0, 
-    interactions: [] 
+  static readonly initialState: Session = {
+    id: "",
+    title: "Untitled Workspace",
+    createdAt: 0,
+    lastAccessed: 0,
+    interactions: [],
+    checkpoints: []
   };
   static seedData = MOCK_SESSIONS.map(s => ({
     ...s,
-    interactions: MOCK_INTERACTIONS.filter(i => i.sessionId === s.id)
+    interactions: MOCK_INTERACTIONS.filter(i => i.sessionId === s.id).map(i => ({
+      ...i,
+      metadata: {
+        relevance: Math.floor(Math.random() * 40) + 60,
+        decayRate: Math.floor(Math.random() * 30),
+        complexity: Math.floor(Math.random() * 50) + 20,
+        sensoryLoad: Math.floor(Math.random() * 50) + 10
+      }
+    })),
+    checkpoints: []
   }));
   async addInteraction(interaction: ContextInteraction): Promise<Session> {
+    const metaInteraction = {
+      ...interaction,
+      metadata: interaction.metadata || {
+        relevance: Math.floor(Math.random() * 40) + 60,
+        decayRate: Math.floor(Math.random() * 20),
+        complexity: Math.floor(Math.random() * 70) + 10,
+        sensoryLoad: Math.floor(Math.random() * 40) + 20
+      }
+    };
     return this.mutate(s => ({
       ...s,
       lastAccessed: Date.now(),
-      interactions: [...s.interactions, interaction]
+      interactions: [...s.interactions, metaInteraction]
     }));
+  }
+  async addCheckpoint(title: string, interactionId: string): Promise<Checkpoint> {
+    const checkpoint: Checkpoint = {
+      id: crypto.randomUUID(),
+      title,
+      interactionId,
+      timestamp: Date.now()
+    };
+    await this.mutate(s => ({
+      ...s,
+      checkpoints: [...(s.checkpoints || []), checkpoint]
+    }));
+    return checkpoint;
   }
 }
 // Legacy demo entities for template compatibility

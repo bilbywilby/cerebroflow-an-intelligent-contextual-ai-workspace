@@ -3,6 +3,12 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
 }
+export interface Checkpoint {
+  id: string;
+  title: string;
+  interactionId: string;
+  timestamp: number;
+}
 export interface ContextInteraction {
   id: string;
   sessionId: string;
@@ -10,6 +16,12 @@ export interface ContextInteraction {
   aiResponse: string;
   retrievedContext: string[];
   timestamp: number;
+  metadata?: {
+    relevance: number; // 0-100
+    decayRate: number; // 0-100
+    complexity: number; // 0-100
+    sensoryLoad: number; // 0-100
+  };
 }
 export interface Session {
   id: string;
@@ -17,6 +29,7 @@ export interface Session {
   createdAt: number;
   lastAccessed: number;
   interactions: ContextInteraction[];
+  checkpoints: Checkpoint[];
 }
 // Keep original demo types for compatibility
 export interface User {

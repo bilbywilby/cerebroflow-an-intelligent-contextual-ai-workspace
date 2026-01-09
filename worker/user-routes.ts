@@ -8,7 +8,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
   app.get('/api/sessions', async (c) => {
     await SessionEntity.ensureSeed(c.env);
     const { items } = await SessionEntity.list(c.env);
-    // Sort by last accessed descending
     const sorted = [...items].sort((a, b) => b.lastAccessed - a.lastAccessed);
     return ok(c, sorted);
   });
@@ -23,7 +22,8 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       title: title.trim(),
       createdAt: now,
       lastAccessed: now,
-      interactions: []
+      interactions: [],
+      checkpoints: []
     });
     return ok(c, session);
   });
@@ -41,6 +41,16 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     const deleted = await SessionEntity.delete(c.env, sessionId);
     return ok(c, { deleted });
   });
+  // CREATE CHECKPOINT
+  app.post('/api/sessions/:sessionId/checkpoints', async (c) => {
+    const sessionId = c.req.param('sessionId');
+    const { title, interactionId } = (await c.req.json()) as { title: string; interactionId: string };
+    if (!title?.trim() || !interactionId) return bad(c, 'title and interactionId required');
+    const entity = new SessionEntity(c.env, sessionId);
+    if (!(await entity.exists())) return notFound(c, 'Session not found');
+    const checkpoint = await entity.addCheckpoint(title, interactionId);
+    return ok(c, checkpoint);
+  });
   // QUERY / ADD INTERACTION
   app.post('/api/sessions/:sessionId/query', async (c) => {
     const sessionId = c.req.param('sessionId');
@@ -48,7 +58,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     if (!userQuery?.trim()) return bad(c, 'query required');
     const entity = new SessionEntity(c.env, sessionId);
     if (!(await entity.exists())) return notFound(c, 'Session not found');
-    // Simulate AI synthesis & semantic retrieval logic
     const interaction: ContextInteraction = {
       id: crypto.randomUUID(),
       sessionId,
@@ -56,7 +65,8 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       aiResponse: `Processed through Layered Memory Protocol. Contextual retrieval suggests high relevance to your recent activity in workspace "${(await entity.getState()).title}".`,
       retrievedContext: [
         'Semantic hit: Previous session context confirmed.',
-        'Episodic hit: User history pattern recognized.'
+        'Episodic hit: User history pattern recognized.',
+        'Sensory hit: Real-time query stream buffer match.'
       ],
       timestamp: Date.now()
     };

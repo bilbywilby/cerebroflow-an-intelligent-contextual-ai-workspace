@@ -1,4 +1,4 @@
-import { ApiResponse, Session } from "@shared/types";
+import { ApiResponse, Session, Checkpoint } from "@shared/types";
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     headers: { 'Content-Type': 'application/json' },
@@ -31,9 +31,13 @@ export const sessionApi = {
   query: (sessionId: string, userQuery: string) => api<Session>(`/api/sessions/${sessionId}/query`, {
     method: 'POST',
     body: JSON.stringify({ userQuery })
-  })
+  }),
+  createCheckpoint: (sessionId: string, title: string, interactionId: string) => 
+    api<Checkpoint>(`/api/sessions/${sessionId}/checkpoints`, {
+      method: 'POST',
+      body: JSON.stringify({ title, interactionId })
+    })
 };
-
 export const knowledgeApi = {
   getStats: () => api<{ health: number; density: string; nodes: number }>('/api/knowledge/stats').catch(() => ({
     health: 98.4,
