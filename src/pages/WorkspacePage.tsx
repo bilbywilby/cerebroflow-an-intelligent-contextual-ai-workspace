@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Send, Save, Database, Sparkles, Brain, Loader2, ArrowLeft } from 'lucide-react';
+import { Send, Save, Database, Sparkles, Brain, Loader2, ArrowLeft, History, Settings2 } from 'lucide-react';
 import { sessionApi } from '@/lib/api-client';
 import { toast } from 'sonner';
 export function WorkspacePage() {
@@ -62,6 +62,9 @@ export function WorkspacePage() {
               <Badge variant="outline" className="hidden sm:flex text-primary border-primary/30 animate-pulse">LMP Active</Badge>
             </div>
             <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="hidden md:flex text-muted-foreground hover:text-foreground" onClick={() => navigate(`/history/${sessionId}`)}>
+                <History className="w-4 h-4 mr-2" /> Audit Trail
+              </Button>
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <Save className="w-4 h-4 mr-2" /> Checkpoint
               </Button>
@@ -139,7 +142,10 @@ export function WorkspacePage() {
         <aside className="w-full md:w-80 lg:w-96 bg-muted/20 backdrop-blur-sm p-6 overflow-y-auto hidden lg:block border-l border-border">
           <div className="flex items-center gap-2 mb-8 px-2 border-b border-border pb-4">
             <Database className="w-5 h-5 text-accent" />
-            <h3 className="font-bold text-xs tracking-[0.2em] uppercase">Memory Retrieval</h3>
+            <div className="flex-1">
+              <h3 className="font-bold text-xs tracking-[0.2em] uppercase">Memory Retrieval</h3>
+            </div>
+            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => navigate('/knowledge')}><Settings2 className="h-3 w-3" /></Button>
           </div>
           <div className="space-y-8">
             <section>

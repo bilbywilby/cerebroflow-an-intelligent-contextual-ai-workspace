@@ -14,6 +14,8 @@ import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { WorkspacePage } from '@/pages/WorkspacePage'
+import { HistoryPage } from '@/pages/HistoryPage'
+import { KnowledgePage } from '@/pages/KnowledgePage'
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -29,6 +31,16 @@ const router = createBrowserRouter([
   {
     path: "/workspace/:sessionId",
     element: <WorkspacePage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/history/:sessionId",
+    element: <HistoryPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/knowledge",
+    element: <KnowledgePage />,
     errorElement: <RouteErrorBoundary />,
   },
 ]);

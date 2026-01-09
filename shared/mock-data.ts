@@ -1,24 +1,4 @@
 import type { Session, ContextInteraction, User, Chat, ChatMessage } from './types';
-export const MOCK_SESSIONS: Session[] = [
-  {
-    id: 's1',
-    title: 'Research: Neural Architectures',
-    createdAt: Date.now() - 86400000 * 2,
-    lastAccessed: Date.now() - 3600000,
-  },
-  {
-    id: 's2',
-    title: 'Marketing Strategy 2024',
-    createdAt: Date.now() - 86400000 * 10,
-    lastAccessed: Date.now() - 86400000,
-  },
-  {
-    id: 's3',
-    title: 'Quantum Computing Fundamentals',
-    createdAt: Date.now() - 3600000,
-    lastAccessed: Date.now() - 600000,
-  },
-];
 export const MOCK_INTERACTIONS: ContextInteraction[] = [
   {
     id: 'i1',
@@ -35,6 +15,29 @@ export const MOCK_INTERACTIONS: ContextInteraction[] = [
     aiResponse: 'Pruning in LMP utilizes a temporal decay function coupled with a semantic relevance score. Information that hasn\'t been accessed within a specific window and has low similarity to recent queries is moved to "cold storage" or compressed to save token context.',
     retrievedContext: ['Pruning Logic v2', 'Semantic Decay Factors'],
     timestamp: Date.now() - 2500000,
+  },
+];
+export const MOCK_SESSIONS: Session[] = [
+  {
+    id: 's1',
+    title: 'Research: Neural Architectures',
+    createdAt: Date.now() - 86400000 * 2,
+    lastAccessed: Date.now() - 3600000,
+    interactions: MOCK_INTERACTIONS,
+  },
+  {
+    id: 's2',
+    title: 'Marketing Strategy 2024',
+    createdAt: Date.now() - 86400000 * 10,
+    lastAccessed: Date.now() - 86400000,
+    interactions: [],
+  },
+  {
+    id: 's3',
+    title: 'Quantum Computing Fundamentals',
+    createdAt: Date.now() - 3600000,
+    lastAccessed: Date.now() - 600000,
+    interactions: [],
   },
 ];
 // Original demo mocks

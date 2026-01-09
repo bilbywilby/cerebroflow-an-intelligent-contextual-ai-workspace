@@ -46,13 +46,13 @@ export function AppSidebar(): JSX.Element {
           <SidebarGroupLabel className="text-orange-400/50 uppercase tracking-widest text-[10px] font-bold">Memory Systems</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#"><History /> <span>Session History</span></a>
+              <SidebarMenuButton asChild isActive={location.pathname.startsWith("/history")}>
+                <Link to="/dashboard"><History /> <span>Session History</span></Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#"><Brain /> <span>Knowledge Base</span></a>
+              <SidebarMenuButton asChild isActive={location.pathname === "/knowledge"}>
+                <Link to="/knowledge"><Brain /> <span>Knowledge Base</span></Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

@@ -33,3 +33,12 @@ export const sessionApi = {
     body: JSON.stringify({ userQuery })
   })
 };
+
+export const knowledgeApi = {
+  getStats: () => api<{ health: number; density: string; nodes: number }>('/api/knowledge/stats').catch(() => ({
+    health: 98.4,
+    density: "4.2GB",
+    nodes: 1420
+  })),
+  getRetentionChart: () => api<any[]>('/api/knowledge/retention').catch(() => [])
+};
