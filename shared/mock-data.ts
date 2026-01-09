@@ -24,6 +24,7 @@ export const MOCK_SESSIONS: Session[] = [
     createdAt: Date.now() - 86400000 * 2,
     lastAccessed: Date.now() - 3600000,
     interactions: MOCK_INTERACTIONS,
+    checkpoints: [],
   },
   {
     id: 's2',
@@ -31,6 +32,7 @@ export const MOCK_SESSIONS: Session[] = [
     createdAt: Date.now() - 86400000 * 10,
     lastAccessed: Date.now() - 86400000,
     interactions: [],
+    checkpoints: [],
   },
   {
     id: 's3',
@@ -38,6 +40,7 @@ export const MOCK_SESSIONS: Session[] = [
     createdAt: Date.now() - 3600000,
     lastAccessed: Date.now() - 600000,
     interactions: [],
+    checkpoints: [],
   },
 ];
 // Original demo mocks
