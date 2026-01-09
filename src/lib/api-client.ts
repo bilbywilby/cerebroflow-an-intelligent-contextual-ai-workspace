@@ -1,4 +1,4 @@
-import { ApiResponse, Session, Checkpoint } from "@shared/types";
+import { ApiResponse, Session, Checkpoint, IdeaBurst } from "@shared/types";
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     headers: { 'Content-Type': 'application/json' },
@@ -28,11 +28,16 @@ export const sessionApi = {
   delete: (id: string) => api<{ deleted: boolean }>(`/api/sessions/${id}`, {
     method: 'DELETE'
   }),
-  query: (sessionId: string, userQuery: string) => api<Session>(`/api/sessions/${sessionId}/query`, {
+  setAgentMode: (sessionId: string, active: boolean) => api<Session>(`/api/sessions/${sessionId}/agent`, {
     method: 'POST',
-    body: JSON.stringify({ userQuery })
+    body: JSON.stringify({ active })
   }),
-  createCheckpoint: (sessionId: string, title: string, interactionId: string) => 
+  query: (sessionId: string, userQuery: string, agent: boolean = false) => 
+    api<Session>(`/api/sessions/${sessionId}/query${agent ? '?mode=agent' : ''}`, {
+      method: 'POST',
+      body: JSON.stringify({ userQuery })
+    }),
+  createCheckpoint: (sessionId: string, title: string, interactionId: string) =>
     api<Checkpoint>(`/api/sessions/${sessionId}/checkpoints`, {
       method: 'POST',
       body: JSON.stringify({ title, interactionId })
@@ -44,5 +49,5 @@ export const knowledgeApi = {
     density: "4.2GB",
     nodes: 1420
   })),
-  getRetentionChart: () => api<any[]>('/api/knowledge/retention').catch(() => [])
+  getIdeaBurst: () => api<IdeaBurst[]>('/api/synthesis/ideas')
 };

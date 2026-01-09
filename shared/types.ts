@@ -2,6 +2,20 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
+  provenance?: ProvenanceNode[];
+  synthesis?: IdeaBurst[];
+}
+export interface ProvenanceNode {
+  layer: 'Sensory' | 'Episodic' | 'Semantic' | 'Procedural' | 'Meta';
+  nodeId: string;
+  similarity: number;
+  age: string;
+}
+export interface IdeaBurst {
+  id: string;
+  title: string;
+  category: 'Substitute' | 'Combine' | 'Adapt' | 'Modify' | 'Put to use' | 'Eliminate' | 'Reverse';
+  description: string;
 }
 export interface Checkpoint {
   id: string;
@@ -16,11 +30,13 @@ export interface ContextInteraction {
   aiResponse: string;
   retrievedContext: string[];
   timestamp: number;
+  agentic?: boolean;
   metadata?: {
-    relevance: number; // 0-100
-    decayRate: number; // 0-100
-    complexity: number; // 0-100
-    sensoryLoad: number; // 0-100
+    relevance: number; 
+    decayRate: number;
+    complexity: number;
+    sensoryLoad: number;
+    provenance?: ProvenanceNode[];
   };
 }
 export interface Session {
@@ -30,20 +46,8 @@ export interface Session {
   lastAccessed: number;
   interactions: ContextInteraction[];
   checkpoints: Checkpoint[];
+  agentMode?: boolean;
 }
-// Keep original demo types for compatibility
-export interface User {
-  id: string;
-  name: string;
-}
-export interface Chat {
-  id: string;
-  title: string;
-}
-export interface ChatMessage {
-  id: string;
-  chatId: string;
-  userId: string;
-  text: string;
-  ts: number;
-}
+export interface User { id: string; name: string; }
+export interface Chat { id: string; title: string; }
+export interface ChatMessage { id: string; chatId: string; userId: string; text: string; ts: number; }

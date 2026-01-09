@@ -2,6 +2,7 @@ import React from 'react';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 export function FooterSection() {
   return (
     <footer className="bg-black/40 border-t border-white/5 pt-16 pb-8">
@@ -52,9 +53,19 @@ export function FooterSection() {
         </div>
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">© 2024 CerebroFlow AI. All rights reserved.</p>
-          <div className="flex gap-6 text-xs text-muted-foreground">
-            <span className="hover:text-white cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-white cursor-pointer">Terms of Service</span>
+          <div className="flex items-center gap-6">
+            <span className="text-xs text-muted-foreground hover:text-white cursor-pointer">Privacy Policy</span>
+            <span className="text-xs text-muted-foreground hover:text-white cursor-pointer">Terms of Service</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-[10px] text-white/5 cursor-default hover:text-white/20 transition-colors select-none">Quack!</span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-indigo-600 border-none text-white font-bold">
+                  CerebroDuck v1.0.13 Engaged 🦆
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>

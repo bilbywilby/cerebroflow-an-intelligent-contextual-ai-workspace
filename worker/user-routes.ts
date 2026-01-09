@@ -2,75 +2,69 @@ import { Hono } from "hono";
 import type { Env } from './core-utils';
 import { ok, bad, notFound } from './core-utils';
 import { SessionEntity } from "./entities";
-import type { ContextInteraction } from "@shared/types";
+import type { ContextInteraction, IdeaBurst } from "@shared/types";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
-  // LIST SESSIONS
   app.get('/api/sessions', async (c) => {
     await SessionEntity.ensureSeed(c.env);
     const { items } = await SessionEntity.list(c.env);
-    const sorted = [...items].sort((a, b) => b.lastAccessed - a.lastAccessed);
-    return ok(c, sorted);
+    return ok(c, items.sort((a, b) => b.lastAccessed - a.lastAccessed));
   });
-  // CREATE SESSION
   app.post('/api/sessions', async (c) => {
-    const { title } = (await c.req.json()) as { title?: string };
+    const { title } = await c.req.json() as { title?: string };
     if (!title?.trim()) return bad(c, 'title required');
-    const id = crypto.randomUUID();
-    const now = Date.now();
     const session = await SessionEntity.create(c.env, {
-      id,
+      id: crypto.randomUUID(),
       title: title.trim(),
-      createdAt: now,
-      lastAccessed: now,
+      createdAt: Date.now(),
+      lastAccessed: Date.now(),
       interactions: [],
-      checkpoints: []
+      checkpoints: [],
+      agentMode: false
     });
     return ok(c, session);
   });
-  // GET SESSION
   app.get('/api/sessions/:sessionId', async (c) => {
-    const sessionId = c.req.param('sessionId');
-    const entity = new SessionEntity(c.env, sessionId);
-    if (!(await entity.exists())) return notFound(c, 'Session not found');
-    const state = await entity.getState();
-    return ok(c, state);
+    const entity = new SessionEntity(c.env, c.req.param('sessionId'));
+    if (!(await entity.exists())) return notFound(c);
+    return ok(c, await entity.getState());
   });
-  // DELETE SESSION
   app.delete('/api/sessions/:sessionId', async (c) => {
-    const sessionId = c.req.param('sessionId');
-    const deleted = await SessionEntity.delete(c.env, sessionId);
-    return ok(c, { deleted });
+    return ok(c, { deleted: await SessionEntity.delete(c.env, c.req.param('sessionId')) });
   });
-  // CREATE CHECKPOINT
-  app.post('/api/sessions/:sessionId/checkpoints', async (c) => {
-    const sessionId = c.req.param('sessionId');
-    const { title, interactionId } = (await c.req.json()) as { title: string; interactionId: string };
-    if (!title?.trim() || !interactionId) return bad(c, 'title and interactionId required');
-    const entity = new SessionEntity(c.env, sessionId);
-    if (!(await entity.exists())) return notFound(c, 'Session not found');
-    const checkpoint = await entity.addCheckpoint(title, interactionId);
-    return ok(c, checkpoint);
+  app.post('/api/sessions/:sessionId/agent', async (c) => {
+    const { active } = await c.req.json() as { active: boolean };
+    const entity = new SessionEntity(c.env, c.req.param('sessionId'));
+    if (!(await entity.exists())) return notFound(c);
+    return ok(c, await entity.setAgentMode(active));
   });
-  // QUERY / ADD INTERACTION
+  app.get('/api/synthesis/ideas', async (c) => {
+    const categories: IdeaBurst['category'][] = ['Substitute', 'Combine', 'Adapt', 'Modify', 'Put to use', 'Eliminate', 'Reverse'];
+    const ideas: IdeaBurst[] = Array.from({ length: 9 }).map((_, i) => ({
+      id: `idea-${i}`,
+      title: `LMP Strategy Concept ${i + 1}`,
+      category: categories[i % categories.length],
+      description: `Synthesized creative path based on current semantic density and temporal access patterns in this session context.`
+    }));
+    return ok(c, ideas);
+  });
   app.post('/api/sessions/:sessionId/query', async (c) => {
     const sessionId = c.req.param('sessionId');
-    const { userQuery } = (await c.req.json()) as { userQuery?: string };
+    const isAgent = c.req.query('mode') === 'agent';
+    const { userQuery } = await c.req.json() as { userQuery?: string };
     if (!userQuery?.trim()) return bad(c, 'query required');
     const entity = new SessionEntity(c.env, sessionId);
-    if (!(await entity.exists())) return notFound(c, 'Session not found');
+    if (!(await entity.exists())) return notFound(c);
     const interaction: ContextInteraction = {
       id: crypto.randomUUID(),
       sessionId,
       userQuery: userQuery.trim(),
-      aiResponse: `Processed through Layered Memory Protocol. Contextual retrieval suggests high relevance to your recent activity in workspace "${(await entity.getState()).title}".`,
-      retrievedContext: [
-        'Semantic hit: Previous session context confirmed.',
-        'Episodic hit: User history pattern recognized.',
-        'Sensory hit: Real-time query stream buffer match.'
-      ],
+      aiResponse: isAgent 
+        ? "AGENTIC SYNTHESIS COMPLETE: Weighted centroid vectors matched. Reasoning path established through semantic meta-layers."
+        : "Standard retrieval successful. Persistence layer confirms high context fidelity.",
+      retrievedContext: ['LMP Meta-Node 42a', 'Episodic Fragment 77b'],
       timestamp: Date.now()
     };
-    const updated = await entity.addInteraction(interaction);
+    const updated = await entity.addInteraction(interaction, isAgent);
     return ok(c, updated);
   });
 }
