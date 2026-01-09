@@ -54,3 +54,18 @@ export const MOCK_CHATS: Chat[] = [
 export const MOCK_CHAT_MESSAGES: ChatMessage[] = [
   { id: 'm1', chatId: 'c1', userId: 'u1', text: 'Hello', ts: Date.now() },
 ];
+
+export const MOCK_IDEAS: IdeaBurst[] = [
+  {
+    id: 'idea-1',
+    title: 'Temporal Folding',
+    category: 'Adapt',
+    description: 'Compress episodic nodes from sessions older than 30 days into procedural templates to reduce semantic load while maintaining functional memory.'
+  },
+  {
+    id: 'idea-2',
+    title: 'Cross-Workspace Fusion',
+    category: 'Combine',
+    description: 'Synthesize context between "Neural Architectures" and "Marketing" sessions to identify brand-aligned architectural metaphors.'
+  }
+];

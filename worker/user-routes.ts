@@ -37,13 +37,27 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     if (!(await entity.exists())) return notFound(c);
     return ok(c, await entity.setAgentMode(active));
   });
+  app.post('/api/sessions/:sessionId/checkpoints', async (c) => {
+    const { title, interactionId } = await c.req.json() as { title: string, interactionId: string };
+    const entity = new SessionEntity(c.env, c.req.param('sessionId'));
+    if (!(await entity.exists())) return notFound(c);
+    const checkpoint = await entity.addCheckpoint(title, interactionId);
+    return ok(c, checkpoint);
+  });
+  app.get('/api/knowledge/stats', async (c) => {
+    return ok(c, {
+      health: 98.4 + (Math.random() * 1.5),
+      density: `${(Math.random() * 2 + 3).toFixed(1)}GB`,
+      nodes: 1400 + Math.floor(Math.random() * 100)
+    });
+  });
   app.get('/api/synthesis/ideas', async (c) => {
     const categories: IdeaBurst['category'][] = ['Substitute', 'Combine', 'Adapt', 'Modify', 'Put to use', 'Eliminate', 'Reverse'];
     const ideas: IdeaBurst[] = Array.from({ length: 9 }).map((_, i) => ({
-      id: `idea-${i}`,
+      id: `idea-${crypto.randomUUID()}`,
       title: `LMP Strategy Concept ${i + 1}`,
       category: categories[i % categories.length],
-      description: `Synthesized creative path based on current semantic density and temporal access patterns in this session context.`
+      description: `Synthesized creative path based on current semantic density and temporal access patterns.`
     }));
     return ok(c, ideas);
   });
@@ -58,7 +72,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       id: crypto.randomUUID(),
       sessionId,
       userQuery: userQuery.trim(),
-      aiResponse: isAgent 
+      aiResponse: isAgent
         ? "AGENTIC SYNTHESIS COMPLETE: Weighted centroid vectors matched. Reasoning path established through semantic meta-layers."
         : "Standard retrieval successful. Persistence layer confirms high context fidelity.",
       retrievedContext: ['LMP Meta-Node 42a', 'Episodic Fragment 77b'],

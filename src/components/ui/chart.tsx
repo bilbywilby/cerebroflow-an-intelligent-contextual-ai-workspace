@@ -36,7 +36,7 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, any>(({ active, pay
     <div ref={ref} className={cn("grid min-w-[8rem] items-start gap-1.5 rounded-lg border bg-background px-2.5 py-1.5 text-xs shadow-xl", className)}>
       {tooltipLabel}
       <div className="grid gap-1.5">
-        {payload.map((item: any, index: number) => {
+        {(payload as any[]).map((item: any, index: number) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
           const itemConfig = config[key]
           const indicatorColor = color || item.payload?.fill || item.color
@@ -54,7 +54,8 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, any>(({ active, pay
                     <span className="font-mono font-medium tabular-nums text-foreground">
                       {item.value != null ? Number(item.value).toLocaleString() : item.value}
                     </span>
-                  </>
+                  </div>
+                </>
               )}
             </div>
           )
@@ -70,7 +71,7 @@ const ChartLegendContent = React.forwardRef<HTMLDivElement, any>(({ className, h
   if (!payload?.length) return null
   return (
     <div ref={ref} className={cn("flex items-center justify-center gap-4", verticalAlign === "top" ? "pb-3" : "pt-3", className)}>
-      {payload.map((item: any) => {
+      {(payload as any[]).map((item: any) => {
         const key = `${nameKey || item.dataKey || "value"}`
         const itemConfig = config[key]
         return (

@@ -32,7 +32,7 @@ export interface ContextInteraction {
   timestamp: number;
   agentic?: boolean;
   metadata?: {
-    relevance: number; 
+    relevance: number;
     decayRate: number;
     complexity: number;
     sensoryLoad: number;
