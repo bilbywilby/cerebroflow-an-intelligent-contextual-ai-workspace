@@ -77,13 +77,7 @@ function updateWranglerJsonc() {
 }
 
 function runSetupCommands() {
-    const commands = [
-    "bun add react-parallax@^3.2.0",
-    "bun add react-intersection-observer@^9.0.0",
-    "bun add recharts",
-    "bun add react-intersection-observer react-parallax recharts",
-    "bun add lucide-react framer-motion recharts react-intersection-observer react-parallax"
-];
+    const commands = [];
     
     if (commands.length === 0) {
         console.log('⊘ No setup commands to run');
