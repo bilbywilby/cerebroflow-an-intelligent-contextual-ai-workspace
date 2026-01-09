@@ -1,6 +1,6 @@
 # Cerebroflow AI - Cloudflare Workers Chat Demo
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/bilbywilby/cerebroflow-an-intelligent-contextual-ai-workspace)
 
 A production-ready full-stack chat application built with Cloudflare Workers, Durable Objects, and React. Demonstrates multi-tenant entity management using a single Global Durable Object for efficient storage, indexing, and listing. Features a modern React frontend with shadcn/ui, Tanstack Query for data fetching, and Tailwind CSS for styling.
 
@@ -139,7 +139,7 @@ Or manually:
 1. Build assets: `bun run build`
 2. Deploy: `wrangler deploy`
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/bilbywilby/cerebroflow-an-intelligent-contextual-ai-workspace)
 
 **Custom Domain**: Edit `wrangler.jsonc` and run `wrangler deploy --env production`.
 
