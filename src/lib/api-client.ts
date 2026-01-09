@@ -1,21 +1,34 @@
-import { ApiResponse } from "@shared/types";
+import { ApiResponse, Session } from "@shared/types";
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, { 
-    headers: { 'Content-Type': 'application/json' }, 
-    ...init 
+  const res = await fetch(path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...init
   });
-  const json = (await res.json()) as ApiResponse<T>;
-  if (!res.ok || !json.success || json.data === undefined) throw new Error(json.error || 'Request failed');
+  let json: ApiResponse<T>;
+  try {
+    json = (await res.json()) as ApiResponse<T>;
+  } catch (e) {
+    throw new Error('Failed to parse response');
+  }
+  if (!res.ok || !json.success) {
+    throw new Error(json.error || 'Request failed');
+  }
+  if (json.data === undefined) {
+    throw new Error('No data returned');
+  }
   return json.data;
 }
-// Session-specific client helpers
 export const sessionApi = {
-  list: () => api<any[]>('/api/sessions'),
-  create: (title: string) => api<any>('/api/sessions', { 
-    method: 'POST', 
-    body: JSON.stringify({ title }) 
+  list: () => api<Session[]>('/api/sessions'),
+  get: (id: string) => api<Session>(`/api/sessions/${id}`),
+  create: (title: string) => api<Session>('/api/sessions', {
+    method: 'POST',
+    body: JSON.stringify({ title })
   }),
-  query: (sessionId: string, userQuery: string) => api<any>(`/api/sessions/${sessionId}/query`, {
+  delete: (id: string) => api<{ deleted: boolean }>(`/api/sessions/${id}`, {
+    method: 'DELETE'
+  }),
+  query: (sessionId: string, userQuery: string) => api<Session>(`/api/sessions/${sessionId}/query`, {
     method: 'POST',
     body: JSON.stringify({ userQuery })
   })

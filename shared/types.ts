@@ -3,12 +3,6 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
 }
-export interface Session {
-  id: string;
-  title: string;
-  createdAt: number;
-  lastAccessed: number;
-}
 export interface ContextInteraction {
   id: string;
   sessionId: string;
@@ -16,6 +10,13 @@ export interface ContextInteraction {
   aiResponse: string;
   retrievedContext: string[];
   timestamp: number;
+}
+export interface Session {
+  id: string;
+  title: string;
+  createdAt: number;
+  lastAccessed: number;
+  interactions: ContextInteraction[];
 }
 // Keep original demo types for compatibility
 export interface User {

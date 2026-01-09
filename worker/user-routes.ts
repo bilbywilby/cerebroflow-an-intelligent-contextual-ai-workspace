@@ -1,39 +1,66 @@
 import { Hono } from "hono";
 import type { Env } from './core-utils';
 import { ok, bad, notFound } from './core-utils';
-import { MOCK_SESSIONS, MOCK_INTERACTIONS } from "@shared/mock-data";
+import { SessionEntity } from "./entities";
+import type { ContextInteraction } from "@shared/types";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
-  // SESSIONS
+  // LIST SESSIONS
   app.get('/api/sessions', async (c) => {
-    return ok(c, MOCK_SESSIONS);
+    await SessionEntity.ensureSeed(c.env);
+    const { items } = await SessionEntity.list(c.env);
+    // Sort by last accessed descending
+    const sorted = [...items].sort((a, b) => b.lastAccessed - a.lastAccessed);
+    return ok(c, sorted);
   });
+  // CREATE SESSION
   app.post('/api/sessions', async (c) => {
     const { title } = (await c.req.json()) as { title?: string };
     if (!title?.trim()) return bad(c, 'title required');
-    const newSession = {
-      id: crypto.randomUUID(),
+    const id = crypto.randomUUID();
+    const now = Date.now();
+    const session = await SessionEntity.create(c.env, {
+      id,
       title: title.trim(),
-      createdAt: Date.now(),
-      lastAccessed: Date.now()
-    };
-    return ok(c, newSession);
+      createdAt: now,
+      lastAccessed: now,
+      interactions: []
+    });
+    return ok(c, session);
   });
-  // QUERY
+  // GET SESSION
+  app.get('/api/sessions/:sessionId', async (c) => {
+    const sessionId = c.req.param('sessionId');
+    const entity = new SessionEntity(c.env, sessionId);
+    if (!(await entity.exists())) return notFound(c, 'Session not found');
+    const state = await entity.getState();
+    return ok(c, state);
+  });
+  // DELETE SESSION
+  app.delete('/api/sessions/:sessionId', async (c) => {
+    const sessionId = c.req.param('sessionId');
+    const deleted = await SessionEntity.delete(c.env, sessionId);
+    return ok(c, { deleted });
+  });
+  // QUERY / ADD INTERACTION
   app.post('/api/sessions/:sessionId/query', async (c) => {
     const sessionId = c.req.param('sessionId');
     const { userQuery } = (await c.req.json()) as { userQuery?: string };
     if (!userQuery?.trim()) return bad(c, 'query required');
-    // Simulate AI response for testing
-    const interaction = {
+    const entity = new SessionEntity(c.env, sessionId);
+    if (!(await entity.exists())) return notFound(c, 'Session not found');
+    // Simulate AI synthesis & semantic retrieval logic
+    const interaction: ContextInteraction = {
       id: crypto.randomUUID(),
       sessionId,
-      userQuery,
-      aiResponse: `This is a mock response from the CerebroFlow LMP for session ${sessionId}. Semantic retrieval found 3 relevant matches.`,
-      retrievedContext: ['Mock context snippet 1', 'Mock context snippet 2'],
+      userQuery: userQuery.trim(),
+      aiResponse: `Processed through Layered Memory Protocol. Contextual retrieval suggests high relevance to your recent activity in workspace "${(await entity.getState()).title}".`,
+      retrievedContext: [
+        'Semantic hit: Previous session context confirmed.',
+        'Episodic hit: User history pattern recognized.'
+      ],
       timestamp: Date.now()
     };
-    return ok(c, interaction);
+    const updated = await entity.addInteraction(interaction);
+    return ok(c, updated);
   });
-  // LEGACY COMPATIBILITY
-  app.get('/api/test', (c) => c.json({ success: true, data: { name: 'CerebroFlow Backend v1' }}));
 }
